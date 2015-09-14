@@ -51,8 +51,12 @@ function getStockQuoteBySymbol(symbol) {
 				getRandomStockQuote();
 			}
 
+			// else {
+			// 	tweetStockAdvice(generateStatus(parsedQuote));
+			// }
+
 			else {
-				tweetStockAdvice(generateStatus(parsedQuote));
+				mockTweetStockAdvice(generateStatus(parsedQuote));
 			}
 		
 		}
@@ -139,7 +143,10 @@ function generateStatus(data) {
 							"Amerikan markkinat kovassa imussa: ",
 							"Iso enkelisijoittaja Unkarista. ",
 							"Everything went better than expected. ",
-							""
+							"Ei kun pullo pöytääm, sitten miettimään! ",
+							"Iso tilaus metsäteollisuudelta: ",
+							"Laskuvirhe pankissa sinun eduksesi: ",
+							"Lisenssisopimukset solmittu: "
 							];
 
 		var negCommentPool = [	
@@ -169,7 +176,7 @@ function generateStatus(data) {
 							"Me ollaan hävitty tää peli! ",
 							"Ojasta allikkoon... ",
 							"Suo siellä, vetelä täällä. ",
-							"On niitä parempiakin kohteita. Myyntiin menee. ",
+							"On niitä parempiakin kohteita. ",
 							"Säälittävää! ",
 							"Nyt ei kunnian kukko laula! ",
 							"Nyt päitä vadille! ",
@@ -180,7 +187,9 @@ function generateStatus(data) {
 							"Seuratkaa pörssitiedotteita. ",
 							"Myynti laskussa Kiinassa: ",
 							"Aasian markkinat huonossa vedossa: ",
-							""
+							"Tulos tai ulos! ",
+							"Sipilän talkoot käynnissä? ",
+							"Lunta tupaan ja jäitä porstuaan! "
 							];
 
 		if (stockChange < 0) {
@@ -203,6 +212,19 @@ function generateStatus(data) {
 			return analysisArray[0];
 		}		
 	};
+
+	var modifier = function() {
+		var modifiers = [
+							" hurjassa",
+							" lievässä",
+							" loivassa",
+							" jyrkässä",
+							" hirvittävässä",
+							" kovassa"
+						];
+		return modifiers[getRandIndex(modifiers)];
+
+	}
 
 	var shittyAdvice = function() {
 		var advicePool = [	
@@ -261,13 +283,16 @@ function generateStatus(data) {
 							" 5/5 Ostaisin uudelleen!",
 							" 0/5 paska ostos.",
 							" Osto omalla vastuulla.",
-							" "
+							" Parempi katsoa kuin katua. Osta!",
+							" Älä nuolaise ennen kuin tipahtaa. Myy huomenna.",
+							" Köyhät kyykkyyn! 2 000 eurolla ostoon!",
+							" Q4 on ostajan aikaa."
 							];
 
 		return advicePool[getRandIndex(advicePool)]; 
 	}
 
-	var status = comment() + stockName + analysis() + stockChange + " %." + shittyAdvice() + " #porssivinkki";
+	var status = comment() + stockName + modifier() + analysis() + stockChange + " %." + shittyAdvice() + " #porssivinkki";
 	
 	// TODO: Add hashtags into status
 
@@ -289,30 +314,30 @@ function mockTweetStockAdvice(status) {
 			+ "Tweet length: " + status.length + "\n" + status);
 	};
 
-	// console.log(status);
+	console.log(status);
 }
 
-function tweetStockAdvice(status) {
+// function tweetStockAdvice(status) {
 
-	if (status.length > 140) {
-		getRandomStockQuote();
-	}
+// 	if (status.length > 140) {
+// 		getRandomStockQuote();
+// 	}
 
-	else {
+// 	else {
 
-		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
-  			if (err && err.code === 187) {
-  				getRandomStockQuote();
-  			}
-  			else if (err && err.code != 187) {
-  				console.log(err) // log into file
-  			}
+// 		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
+//   			if (err && err.code === 187) {
+//   				getRandomStockQuote();
+//   			}
+//   			else if (err && err.code != 187) {
+//   				console.log(err) // log into file
+//   			}
 
-  			console.log(data);
-		});
-	}
+//   			console.log(data);
+// 		});
+// 	}
 		
-}
+// }
 
 getRandomStockQuote();
 
