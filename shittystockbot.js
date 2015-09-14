@@ -123,7 +123,23 @@ function generateStatus(data) {
 							"Markkinoilla seilaaminen vaatii taitoa. ",
 							"Nami nami! ",
 							"Pidä silmällä: ",
-							"Loppuvuosi vaikuttaa lupaavalta."
+							"Loppuvuosi vaikuttaa lupaavalta. ",
+							"Tämä kortti kannattaa katsoa. ",
+							"Mä tunnen sen jo kasvavan... ",
+							"Mielenkiintoista kehitystä. ",
+							"Paistaa se aurinko risukasaankin: ",
+							"Loppuviikosta isota isot rahat: ",
+							"Joulubonukset matkalla. ",
+							"Nousukiito jatkuu! ",
+							"Big money! ",
+							"Vahva avaus: ",
+							"Nyt saa naattia! ",
+							"Ny rillataan! ",
+							"Jättidiili Keski-Eurooppaan: ",
+							"Amerikan markkinat kovassa imussa: ",
+							"Iso enkelisijoittaja Unkarista. ",
+							"Everything went better than expected. ",
+							""
 							];
 
 		var negCommentPool = [	
@@ -148,7 +164,23 @@ function generateStatus(data) {
 							"Olisiko huomenna parempi päivä. ",
 							"Takkiin tulee. ",
 							"Epävarmalta näyttää. ",
-							"Tulenarkaa tavaraa. Älä hätiköi. "
+							"Tulenarkaa tavaraa. Älä hätiköi. ",
+							"Game over! ",
+							"Me ollaan hävitty tää peli! ",
+							"Ojasta allikkoon... ",
+							"Suo siellä, vetelä täällä. ",
+							"On niitä parempiakin kohteita. Myyntiin menee. ",
+							"Säälittävää! ",
+							"Nyt ei kunnian kukko laula! ",
+							"Nyt päitä vadille! ",
+							"Always look on the bright side of life! ",
+							"Pikkujuttuja. ",
+							"Aikamoista vuoristorataa! ",
+							"Rati riti ralla, ollaan pakkasella. ",
+							"Seuratkaa pörssitiedotteita. ",
+							"Myynti laskussa Kiinassa: ",
+							"Aasian markkinat huonossa vedossa: ",
+							""
 							];
 
 		if (stockChange < 0) {
@@ -186,7 +218,7 @@ function generateStatus(data) {
 							" Osta!",
 							" Sijoita vähintään tuhat euroa!",
 							" Tänään sijoitettu on huomenna kääritty.",
-							" Parempi osake salkussa kuin kymmenen kasvurahastossa.",
+							" Parempi pyy pivossa kuin osake salkussa, myykää!",
 							" Komissiot kiikarissa? Myy, myy, myy!",
 							" Edesmenneen isoisäni sanoin: Myy poika, myy!",
 							" Beta-kertoimet sikseen, nyt on aika ostaa!",
@@ -201,11 +233,11 @@ function generateStatus(data) {
 							" Osta 875 kpl!",
 							" Myyntiin menee!",
 							" Osta tai myy. Takkiin tulee joka tapauksessa.",
-							" Ehkä ostat, ehkä et.",
+							" Ehkä ostoon, ehkä ei.",
 							" Halpaa kuin saippua! Ostoon!",
 							" Vain hullu harkitsee myymistä!",
 							" Osta pois, vaikka lahjaksi.",
-							" Tyhmäkin voi olla viisas, jos osaa myydä.",
+							" Tyhmäkin voi olla viisas, jos uskaltaa myydä.",
 							" Markka-aikana olisin ostanut. Nyt myntiin!",
 							" Pitkällä tähtäimellä osta, lyhyellä myy!",
 							" 2 000 kpl ostoon ja sassiin!",
@@ -214,7 +246,22 @@ function generateStatus(data) {
 							" Säästä ensi viikkoon ja myy.",
 							" Ylihuomenna myyt isommalla voitolla!",
 							" Varaudu myymään loppuviikosta.",
-							" Odota Q3:n loppuun ja osta enintään 3 200 kpl."
+							" Odota Q3:n loppuun ja osta enintään 3 200 kpl.",
+							" Kerran se vaan kirpasee, osta 400 kpl!",
+							" Aika on rahaa. Nyt on aika ostaa.",
+							" Sijoita 800 euroa.",
+							" M niin kuin myyntiin!",
+							" Osta, jos et muuta keksi.",
+							" Tuottoa luvassa. Osta 100 kpl.",
+							" Älä suotta vaivaudu.",
+							" Osta tai myy. Määrä ratkaisee!",
+							" Kelpaa ehkä koiranruuaksi.",
+							" Älä osta.",
+							" Osakeanti tulossa. Pidä kiinni!",
+							" 5/5 Ostaisin uudelleen!",
+							" 0/5 paska ostos.",
+							" Osto omalla vastuulla.",
+							" "
 							];
 
 		return advicePool[getRandIndex(advicePool)]; 
@@ -229,6 +276,10 @@ function generateStatus(data) {
 
 function generateFakeQuotes() {
 	var quotes = [];
+}
+
+function isSimilar(tweet) { // if latest isSimilar == true -> new advice
+	return true;
 }
 
 function mockTweetStockAdvice(status) {
