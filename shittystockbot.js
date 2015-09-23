@@ -2,9 +2,19 @@ var express = require("express");
 var fs = require("fs");
 var request = require("request");
 var cheerio = require("cheerio");
+var promise = require("promise")
 var app = express();
 
+
 var companies = require("./companies.json");
+var texts = require("./status_texts.json");
+var config = require("./config.js");
+
+var util = require("util");
+var OAuth = require("oauth").OAuth;
+
+
+// Twitter module and settings
 
 var twit = require("twit");
 
@@ -14,6 +24,10 @@ var tweeter = new twit({
   , access_token:         '3405822838-K00ij7isbMPrmWcLZM0yiHx0Uc0KGYExe3c8wWv'
   , access_token_secret:  'mLdPKDinQyGRbB7EozecHmsijY0x0EXA0w2WuscchZG0h'
 });
+
+
+
+// Stuff for handling company info
 
 function getRandIndex(dataset) {
 	return Math.floor(Math.random() * dataset.length);
@@ -56,7 +70,7 @@ function getStockQuoteBySymbol(symbol) {
 			// }
 
 			else {
-				mockTweetStockAdvice(generateStatus(parsedQuote));
+				mockTweetStockAdvice( generateStatus( parsedQuote ) );
 			}
 		
 		}
@@ -96,223 +110,111 @@ function getStockNameBySymbol(symbol) {
 }
 
 // Generate tweet
-function generateStatus(data) {
+function generateStatus(data) { //TODO: make into a function
 	var stockName = getStockNameBySymbol( getValueByKey(data, "Symbol") );
-	var stockChange = getValueByKey(data, "Change");
+	var percentage = getValueByKey(data, "Change");
 	
-	// function returnValueFromIndex( array )
-
-	var comment = function() {
-
-		// TODO: better way to construct tweets
-
-		var posCommentPool = [	
-							"Onko tämä todellista? ", 
-							"Nyt mennään ja lujaa! ", 
-							"Nyt alkoi nousukausi! ", 
-							"Sijoittajien luottamus palaamassa? ",
-							"Helsingissä meneillään oikea Bull Market! ",
-							"Päivän musta hevonen havaittu: ",
-							"Rahalla saa ja hevosella pääsee. ",
-							"Kurssiriski lähentelee nollaa. ",
-							"Päivän nousija:  ",
-							"Toverit, tämä nousu ei jää tähän! ",
-							"Täällä on Delta-kertoimet paikallaan! ",
-							"Positiivista supinaa markkinoilla. ",
-							"Tämä enteilee hyvää. ",
-							"Voiton puolella ollaan. ",
-							"Suunta on ylöspäin! ",
-							"Etene omalla vastuulla. ",
-							"Herkullista!",
-							"Markkinoilla seilaaminen vaatii taitoa. ",
-							"Nami nami! ",
-							"Pidä silmällä: ",
-							"Loppuvuosi vaikuttaa lupaavalta. ",
-							"Tämä kortti kannattaa katsoa. ",
-							"Mä tunnen sen jo kasvavan... ",
-							"Mielenkiintoista kehitystä. ",
-							"Paistaa se aurinko risukasaankin: ",
-							"Loppuviikosta isota isot rahat: ",
-							"Joulubonukset matkalla. ",
-							"Nousukiito jatkuu! ",
-							"Big money! ",
-							"Vahva avaus: ",
-							"Nyt saa naattia! ",
-							"Ny rillataan! ",
-							"Jättidiili Keski-Eurooppaan: ",
-							"Amerikan markkinat kovassa imussa: ",
-							"Iso enkelisijoittaja Unkarista. ",
-							"Everything went better than expected. ",
-							"Ei kun pullo pöytääm, sitten miettimään! ",
-							"Iso tilaus metsäteollisuudelta: ",
-							"Laskuvirhe pankissa sinun eduksesi: ",
-							"Lisenssisopimukset solmittu: "
-							];
-
-		var negCommentPool = [	
-							"Voiko tästä suosta enää nousta? ", 
-							"Sijoittajien luottamus mennyttä! ", 
-							"Tämä ei jatku pitkään. ", 
-							"Pitäisikö nyt itkeä vai nauraa? ",
-							"Päivän pettymys: ",
-							"Limiitit paukkuvat! ",
-							"Elämme lopun aikoja ystävät. ",
-							"Oij, mikä rekyyli! ",
-							"Saturaatiota havaittavissa! ",
-							"Eihän tällaista volatiliteettiä ole olemassakaan! ",
-							"Ei tämä ainakaan paremmaksi muutu. ",
-							"Tällä et tule tienaamaan. ",
-							"Tulevaisuuden näkymät ovat synkkiä. ",
-							"Usko koetuksella. ",
-							"Tuurilla ne laivatkin seilaa. ",
-							"Toimialavaikeudet näkyvät: ",
-							"Mihin asti mennään? ",
-							"Loppua ei ole näkyvissä. ",
-							"Olisiko huomenna parempi päivä. ",
-							"Takkiin tulee. ",
-							"Epävarmalta näyttää. ",
-							"Tulenarkaa tavaraa. Älä hätiköi. ",
-							"Game over! ",
-							"Me ollaan hävitty tää peli! ",
-							"Ojasta allikkoon... ",
-							"Suo siellä, vetelä täällä. ",
-							"On niitä parempiakin kohteita. ",
-							"Säälittävää! ",
-							"Nyt ei kunnian kukko laula! ",
-							"Nyt päitä vadille! ",
-							"Always look on the bright side of life! ",
-							"Pikkujuttuja. ",
-							"Aikamoista vuoristorataa! ",
-							"Rati riti ralla, ollaan pakkasella. ",
-							"Seuratkaa pörssitiedotteita. ",
-							"Myynti laskussa Kiinassa: ",
-							"Aasian markkinat huonossa vedossa: ",
-							"Tulos tai ulos! ",
-							"Sipilän talkoot käynnissä? ",
-							"Lunta tupaan ja jäitä porstuaan! "
-							];
-
-		if (stockChange < 0) {
-			return negCommentPool[getRandIndex(negCommentPool)]; 
-		}
-		else {
-			return posCommentPool[getRandIndex(posCommentPool)]; 
-		}
-	}
+		// return promise???
 
 
-	var analysis = function() {	
 
-		var analysisArray = [" nousussa ", " laskussa "];
-		
-		if (stockChange < 0) {
-			return analysisArray[1];
-		}
-		else {
-			return analysisArray[0];
-		}		
-	};
-
-	var modifier = function() {
-		var modifiers = [
-							" hurjassa",
-							" lievässä",
-							" loivassa",
-							" jyrkässä",
-							" hirvittävässä",
-							" kovassa"
-						];
-		return modifiers[getRandIndex(modifiers)];
-
-	}
-
-	var shittyAdvice = function() {
-		var advicePool = [	
-							" Nyt joukolla ostamaan!", 
-							" Tänään on hyvä päivä myydä!", 
-							" Näistä kannattaa pitää kiinni!", 
-							" Tämä tuottaa tulevaisuudessa!",
-							" Myyminen kannattaa aina!",
-							" Koskaan ei ole tyhmää ostaa!",
-							" Uskallatko ottaa riskin?",
-							" Osta varauksella!",
-							" Myy!",
-							" Osta!",
-							" Sijoita vähintään tuhat euroa!",
-							" Tänään sijoitettu on huomenna kääritty.",
-							" Parempi pyy pivossa kuin osake salkussa, myykää!",
-							" Komissiot kiikarissa? Myy, myy, myy!",
-							" Edesmenneen isoisäni sanoin: Myy poika, myy!",
-							" Beta-kertoimet sikseen, nyt on aika ostaa!",
-							" Ei laatu vaan määrä. Osta vähintään 1 000 kpl!",
-							" Ei osinkoja tänä vuonna. Myyntiin ja äkkiä!",
-							" Miksi myydä, kun voi ostaa?",
-							" Pikavippi taskuun ja rahat kiinni!",
-							" Osta. Odota kuukausi. Myy.",
-							" Osta vähintään 150 kpl!",
-							" Sijoita 1 500 euroa!",
-							" Myy puolet. Tulevaisuus näyttää epävarmalta.",
-							" Osta 875 kpl!",
-							" Myyntiin menee!",
-							" Osta tai myy. Takkiin tulee joka tapauksessa.",
-							" Ehkä ostoon, ehkä ei.",
-							" Halpaa kuin saippua! Ostoon!",
-							" Vain hullu harkitsee myymistä!",
-							" Osta pois, vaikka lahjaksi.",
-							" Tyhmäkin voi olla viisas, jos uskaltaa myydä.",
-							" Markka-aikana olisin ostanut. Nyt myntiin!",
-							" Pitkällä tähtäimellä osta, lyhyellä myy!",
-							" 2 000 kpl ostoon ja sassiin!",
-							" Tonni sinne, tonni tänne. Osta!",
-							" Älä vaihda suuntaan tai toiseen.",
-							" Säästä ensi viikkoon ja myy.",
-							" Ylihuomenna myyt isommalla voitolla!",
-							" Varaudu myymään loppuviikosta.",
-							" Odota Q3:n loppuun ja osta enintään 3 200 kpl.",
-							" Kerran se vaan kirpasee, osta 400 kpl!",
-							" Aika on rahaa. Nyt on aika ostaa.",
-							" Sijoita 800 euroa.",
-							" M niin kuin myyntiin!",
-							" Osta, jos et muuta keksi.",
-							" Tuottoa luvassa. Osta 100 kpl.",
-							" Älä suotta vaivaudu.",
-							" Osta tai myy. Määrä ratkaisee!",
-							" Kelpaa ehkä koiranruuaksi.",
-							" Älä osta.",
-							" Osakeanti tulossa. Pidä kiinni!",
-							" 5/5 Ostaisin uudelleen!",
-							" 0/5 paska ostos.",
-							" Osto omalla vastuulla.",
-							" Parempi katsoa kuin katua. Osta!",
-							" Älä nuolaise ennen kuin tipahtaa. Myy huomenna.",
-							" Köyhät kyykkyyn! 2 000 eurolla ostoon!",
-							" Q4 on ostajan aikaa."
-							];
-
-		return advicePool[getRandIndex(advicePool)]; 
-	}
-
-	var status = comment() + stockName + modifier() + analysis() + stockChange + " %." + shittyAdvice() + " #porssivinkki";
+	var status = 	getShittyComment() + 
+					stockName + 
+					getShittyModifier() + 
+					getShittyDirection() + " " +
+					percentage.replace(".",",") + " %." + 
+					getShittyAdvice() + 
+					" #porssivinkki";
 	
 	// TODO: Add hashtags into status
 
 	return status;
 }
 
-function generateFakeQuotes() {
-	var quotes = [];
+
+function getShittyAdvice() {
+	return texts.advice[getRandIndex( texts.advice )].text;
 }
 
-function isSimilar(tweet) { // if latest isSimilar == true -> new advice
-	return true;
+function getShittyComment(change) {
+	if (change < 0) {
+		return texts.comments.negative[getRandIndex( texts.comments.negative )].text;
+	}
+	else {
+		return texts.comments.positive[getRandIndex( texts.comments.positive )].text;
+	}
 }
+
+function getShittyDirection(change) {
+	if (change < 0) {
+		return texts.direction.down[getRandIndex( texts.direction.down )].text;
+	}
+	else {
+		return texts.direction.up[getRandIndex( texts.direction.up )].text;
+	}
+	
+}
+
+function getShittyModifier() {
+	return texts.modifiers[getRandIndex( texts.modifiers )];
+}
+
+
+function getLatestTweets(amount) { 
+
+	var url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=porssivinkki&count=" + amount;
+	
+	oa = new OAuth("https://twitter.com/oauth/request_token",
+	                 "https://twitter.com/oauth/access_token", 
+	                 config.consumerKey, 
+	                 config.consumerSecret, 
+	                 "1.0A", "http://localhost:3000/oauth/callback", "HMAC-SHA1");
+
+	return new Promise(function(resolve, reject) {
+
+		oa.get(url, config.accessToken, config.accessTokenSecret, function(error, data) {
+		  
+			if (!error) {
+				res = JSON.parse(data)
+
+		 		resolve(res);
+			}
+			else {
+				reject(Error("ERROR!"));
+			}
+
+		});
+	});
+}
+
+function recentTweetsContain(advice) {
+
+	getLatestTweets(10).then(function(response) {
+
+		for (var i = 0; i < response.length; i++) {
+
+			var tweet = response[i].text;
+
+			if (tweet.includes(advice)) {
+				return true;	
+			}
+		}
+		return false;
+	});
+}
+
+function hasSameAdvice(string, subString) {
+	return string.includes(subString);
+}
+
+
 
 function mockTweetStockAdvice(status) {
 
 	if (status.length > 140) {
 		console.log("================  The tweet is too long! =================" + "\n" 
 			+ "Tweet length: " + status.length + "\n" + status);
-	};
+	}
 
 	console.log(status);
 }
@@ -339,17 +241,15 @@ function mockTweetStockAdvice(status) {
 		
 // }
 
+
+
 getRandomStockQuote();
 
-
-
-
-
-
-
-
-
-
+// var test = getRandIndex(texts.direction.down);
+// console.log(texts.advice[getRandIndex( texts.advice )].text)
+// console.log(texts.comments.positive[getRandIndex( texts.comments.positive )].text)
+// console.log(texts.direction.down[test].text);
+// console.log(texts.modifiers[getRandIndex( texts.modifiers )]);
 
 
 
