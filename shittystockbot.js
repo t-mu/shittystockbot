@@ -2,7 +2,7 @@ var express = require("express");
 var fs = require("fs");
 var request = require("request");
 var cheerio = require("cheerio");
-var promise = require("promise")
+// var promise = require("promise")
 var app = express();
 
 
@@ -53,50 +53,89 @@ function getStockQuoteBySymbol(symbol) {
 			symbol + 
 			"%22)&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";	
 
-	request(url, "utf8", function (error, response, body) {
 
-		if (!error && response.statusCode === 200) {
+	return new Promise(function(resolve, reject) {
 
-			var stockQuery = JSON.parse(body);		
-			
-			var parsedQuote = stockQuery.query.results.quote;
+		request(url, "utf8", function (error, response, body) {
 
-			if (parsedQuote.Change === null) {
-				getRandomStockQuote();
+			if (!error && response.statusCode === 200) {
+
+				var stockQuery = JSON.parse(body);		
+				
+				var parsedQuote = stockQuery.query.results.quote;
+
+				if (parsedQuote.Change === null) {
+					getRandomStockQuote();
+				}
+
+				// else {
+				// 	tweetStockAdvice(generateStatus(parsedQuote));
+				// }
+
+				else {
+					resolve(parsedQuote);
+				}
 			}
-
-			// else {
-			// 	tweetStockAdvice(generateStatus(parsedQuote));
-			// }
-
 			else {
-				mockTweetStockAdvice( generateStatus( parsedQuote ) );
+				console.log(error);
+				//TODO: log errors to file
 			}
-		
-		}
-		else {
-			console.log(error);
-			//TODO: log errors to file
-		}
-
+		});
 	});
-
 } 
 
 
 // Get a stockquote for a random company from companies.json
 function getRandomStockQuote() {
 	var company = JSON.parse( getCompanyFromJson( getRandIndex(companies) ) );
-	return getStockQuoteBySymbol( company.symbol );
+	return new Promise(function(resolve, reject){
+		getStockQuoteBySymbol( company.symbol ).then(function(response) {
+			resolve(response);
+		});
+	}); 
+}
+
+// Generate a full blown twitter status from shitty blocks
+function generateStatus(data) {
+
+	var stockName = getStockNameBySymbol( data.Symbol );
+	var percentChange = data.PercentChange;
+
+	return new Promise(function(resolve, reject){
+		
+		var comment = Promise.resolve(getShittyComment(percentChange));
+		var modiefier = Promise.resolve(getShittyModifier());
+		var direction = Promise.resolve(getShittyDirection(percentChange));
+		var advice = Promise.resolve(getShittyAdvice());
+		var hashtag = " #porssivinkki";
+
+		Promise.all([	comment, 
+						stockName, 
+						modiefier, 
+						direction, 
+						" " + percentChange.replace(".",",").replace("%"," %."), 
+						advice, 
+						hashtag
+					])
+		.then(function(values){
+			var status = "";
+			for (value of values) {
+				status = status + value;
+			}
+			resolve(status);	
+		});
+	});
 }
 
 
+
 // Get value from JSON by key
+// TODO: Remove as unnecessary???
 function getValueByKey(data, key) {
 	return data[key]
 }
 
-
+// Get correctly formatted company name from companies.json
 function getStockNameBySymbol(symbol) {
 	var stockName = "";
 
@@ -109,57 +148,87 @@ function getStockNameBySymbol(symbol) {
 	return stockName;
 }
 
-// Generate tweet
-function generateStatus(data) { //TODO: make into a function
-	var stockName = getStockNameBySymbol( getValueByKey(data, "Symbol") );
-	var percentage = getValueByKey(data, "Change");
-	
-		// return promise???
 
 
 
-	var status = 	getShittyComment() + 
-					stockName + 
-					getShittyModifier() + 
-					getShittyDirection() + " " +
-					percentage.replace(".",",") + " %." + 
-					getShittyAdvice() + 
-					" #porssivinkki";
-	
-	// TODO: Add hashtags into status
 
-	return status;
-}
+// ===== Get shitty stuff for tweet ===== //  
 
 
+// Return random shitty advice from status_text.json
 function getShittyAdvice() {
-	return texts.advice[getRandIndex( texts.advice )].text;
+	var advice = texts.advice[getRandIndex( texts.advice )].text;
+	return new Promise(function(resolve, reject){
+		avoidSimilar(advice, getShittyAdvice).then(function(res){
+			resolve(res);
+		});	
+	});
 }
 
-function getShittyComment(change) {
-	if (change < 0) {
-		return texts.comments.negative[getRandIndex( texts.comments.negative )].text;
+// // Return random shitty comment from status_text.json
+function getShittyComment(percent) {
+
+	if (parseInt(percent) < 0) {
+		var negComment = texts.comments.negative[getRandIndex( texts.comments.negative )].text;
+		return new Promise(function(resolve, reject){
+			avoidSimilar(negComment, getShittyComment, percent).then(function(res){
+				resolve(res);
+			});	
+		});
 	}
 	else {
-		return texts.comments.positive[getRandIndex( texts.comments.positive )].text;
+		var posComment = texts.comments.positive[getRandIndex( texts.comments.positive )].text;
+		return new Promise(function(resolve, reject){
+			avoidSimilar(posComment, getShittyComment, percent).then(function(res){
+				resolve(res);
+			});	
+		});
 	}
 }
 
-function getShittyDirection(change) {
-	if (change < 0) {
+// Return random shitty direction from status_text.json
+function getShittyDirection(percent) {
+
+	if (parseInt(percent) < 0) {
 		return texts.direction.down[getRandIndex( texts.direction.down )].text;
 	}
 	else {
 		return texts.direction.up[getRandIndex( texts.direction.up )].text;
 	}
-	
 }
 
+// Return random shitty modifier from status_text.json
 function getShittyModifier() {
 	return texts.modifiers[getRandIndex( texts.modifiers )];
 }
 
+// 
+function avoidSimilar(thing, callback) {
 
+	return new Promise(function(resolve, reject){
+		resolve(
+			recentTweetsContain(thing).then(function(response){
+				
+				if (response === true) {
+					// console.log("Recent tweets contain this substring: " + thing);
+					return callback(arguments[2]);
+				}
+				else if (response === false){
+					// console.log("Recent tweets do not contain this substring: " + thing);
+					return thing;
+				}
+
+			})
+		);
+	});
+	
+}
+
+
+// ===== Some other functions ===== //
+
+
+// Return latest tweets
 function getLatestTweets(amount) { 
 
 	var url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=porssivinkki&count=" + amount;
@@ -187,26 +256,25 @@ function getLatestTweets(amount) {
 	});
 }
 
-function recentTweetsContain(advice) {
+// Check wether latest tweets contain a specific string
+function recentTweetsContain(subStr) {
 
-	getLatestTweets(10).then(function(response) {
+	return new Promise(function(resolve, rejcet){
 
-		for (var i = 0; i < response.length; i++) {
+		resolve(
+			getLatestTweets(10).then(function(response) {
 
-			var tweet = response[i].text;
+				for (tweet of response) {
+					if (tweet.text.includes(subStr)) {
+						return true;
+					}
+				}
+				return false;
+			})
+		);
 
-			if (tweet.includes(advice)) {
-				return true;	
-			}
-		}
-		return false;
-	});
+	});	
 }
-
-function hasSameAdvice(string, subString) {
-	return string.includes(subString);
-}
-
 
 
 function mockTweetStockAdvice(status) {
@@ -242,14 +310,11 @@ function mockTweetStockAdvice(status) {
 // }
 
 
-
-getRandomStockQuote();
-
-// var test = getRandIndex(texts.direction.down);
-// console.log(texts.advice[getRandIndex( texts.advice )].text)
-// console.log(texts.comments.positive[getRandIndex( texts.comments.positive )].text)
-// console.log(texts.direction.down[test].text);
-// console.log(texts.modifiers[getRandIndex( texts.modifiers )]);
+getRandomStockQuote().then(function(quote){
+	generateStatus(quote).then(function(status){
+		mockTweetStockAdvice(status);
+	});
+});
 
 
 
