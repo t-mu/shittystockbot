@@ -39,7 +39,16 @@
 			{ "type": "pos", "text": "Everything went better than expected. " },
 			{ "type": "pos", "text": "Ei kun pullo pöytään, sitten miettimään! " },
 			{ "type": "pos", "text": "Iso tilaus metsäteollisuudelta: " },
-			{ "type": "pos", "text": "Laskuvirhe pankissa sinun eduksesi: " }
+			{ "type": "pos", "text": "Laskuvirhe pankissa sinun eduksesi: " },
+			{ "type": "pos", "text": "Rai Rai! " },
+			{ "type": "pos", "text": "Tunteet pinnassa? " },
+			{ "type": "pos", "text": "Positiivinen tulosvaroitus: " },
+			{ "type": "pos", "text": "Happy ending luvassa? " },
+			{ "type": "pos", "text": "Yllätysnimi ylöspäin: " },
+			{ "type": "pos", "text": "Loppukiriä tälle vuodelle? " },
+			{ "type": "pos", "text": "Lehdistön suosikki " },
+			{ "type": "pos", "text": "Vanha kunnon " },
+			{ "type": "pos", "text": "Rahamies-Ruuskasen luottokohde " }
 		],
 		"negative": [
 			{ "type": "neg", "text": "Voiko tästä suosta enää nousta? " },
@@ -82,7 +91,24 @@
 			{ "type": "neg", "text": "Tulos tai ulos! " },
 			{ "type": "neg", "text": "Sipilän talkoot käynnissä? " },
 			{ "type": "neg", "text": "Lunta tupaan ja jäitä porstuaan! " },
-			{ "type": "neg", "text": "Tappiolla on hyvä olla. " }	
+			{ "type": "neg", "text": "Tappiolla on hyvä olla. " },
+			{ "type": "neg", "text": "Paskan möivät. " },
+			{ "type": "neg", "text": "Leukojen vällii, leukojen vällii: " },
+			{ "type": "neg", "text": "Oispa kaljaa... " },
+			{ "type": "neg", "text": "Taas mennään, saatana! " },
+			{ "type": "neg", "text": "Rai Rai! " },
+			{ "type": "neg", "text": "Tappiolla on hyvä olla. " },
+			{ "type": "neg", "text": "YT:t nurkan takana? " },
+			{ "type": "neg", "text": "Tulosvaroitusta odotellassa: " },
+			{ "type": "neg", "text": "Nyt kävi niin, että " },
+			{ "type": "neg", "text": "Talviunille mars! " },
+			{ "type": "neg", "text": "Syöksyen alaspäin! " },
+			{ "type": "neg", "text": "Lol apua! " },
+			{ "type": "neg", "text": "Mä huuta hjelppe täälä! " },
+			{ "type": "neg", "text": "Pieni notkahdus vain. " },
+			{ "type": "neg", "text": "Älkää nyt oikeesti tätä ostako. " },
+			{ "type": "neg", "text": "Irtisanomiset alkamassa: " },
+			{ "type": "neg", "text": "Kylmää kyytiä: " }	
 		]
 	},
 	"advice": [
@@ -138,7 +164,7 @@
 		{ "type": "sell", "text": " Älä osta." },
 		{ "type": "buy", "text": " Osakeanti tulossa. Pidä kiinni!" },
 		{ "type": "buy", "text": " 5/5 Ostaisin uudelleen!" },
-		{ "type": "buy", "text": " 0/5 paska ostos." },
+		{ "type": "buy", "text": " 0/5 Paska ostos." },
 		{ "type": "buy", "text": " Osto omalla vastuulla." },
 		{ "type": "buy", "text": " Parempi katsoa kuin katua. Osta!" },
 		{ "type": "sell", "text": " Älä nuolaise ennen kuin tipahtaa. Myy huomenna." },
@@ -146,8 +172,27 @@
 		{ "type": "buy", "text": " Q4 on ostajan aikaa." },
 		{ "type": "buy", "text": " Osta enintään 25 kpl." },
 		{ "type": "buy", "text": " Varaudu tappioihin." },
-		{ "type": "buy", "sell": " Olisikos aika myydä?" },
-		{ "type": "buy", "text": " 2/5 saattaisin ostaa uudelleen." }
+		{ "type": "buy", "text": " Olisikos aika myydä?" },
+		{ "type": "buy", "text": " 2/5 Saattaisin ostaa uudelleen." },
+		{ "type": "buy", "text": " Myisin, jos voisin." },
+		{ "type": "buy", "text": " 15 000 euroa kiinni!" },
+		{ "type": "buy", "text": " Näistä on päästävä eroon!" },
+		{ "type": "buy", "text": " Sijoita korkeintaan 8 000 euroa." },
+		{ "type": "buy", "text": " Sijoita korkeintaan 19 000 euroa." },
+		{ "type": "buy", "text": " Osta ainakin 90 000 euroalla." },
+		{ "type": "buy", "text": " Sijoita vähintään 88 000 euroa." },
+		{ "type": "buy", "text": " Sijoita joko 8 000 euroa tai 19 000 euroa." },
+		{ "type": "buy", "text": " Sijoita enintään 170 euroa." },
+		{ "type": "buy", "text": " Myy vähintään 1600 kpl!" },
+		{ "type": "buy", "text": " Myy kaikki!" },
+		{ "type": "buy", "text": " Myyntiin 900 kpl." },
+		{ "type": "buy", "text": " Ei enää ikinä näitä." },
+		{ "type": "buy", "text": " Suosittelen vahvasti!" },
+		{ "type": "buy", "text": " Varmaa voittoa luvassa." },
+		{ "type": "buy", "text": " Menettelee. Osta vaikka sata." },
+		{ "type": "buy", "text": " Malta vielä, malta." },
+		{ "type": "buy", "text": " Ennemmin vaikka suolakurkkuja." },
+		{ "type": "buy", "text": " Onnenonkijat huomio! Ostoon." }
 	],
 	"direction": {
 	 	"up": [
@@ -172,6 +217,17 @@
 		" laiskassa",
 		" äkäisessä",
 		" hitaassa",
-		" nopeassa"
+		" nopeassa",
+		" väliaikaisessa",
+		" jatkuvassa",
+		" hetkellisessä",
+		" loputtomassa",
+		" pikaisessa",
+		" komeassa",
+		" rumassa",
+		" nopeassa",
+		" katkerassa",
+		" makeassa",
+		" persikkaisessa"
 	]
 }
