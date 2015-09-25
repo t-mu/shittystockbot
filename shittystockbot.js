@@ -67,11 +67,6 @@ function getStockQuoteBySymbol(symbol) {
 				if (parsedQuote.Change === null) {
 					getRandomStockQuote();
 				}
-
-				// else {
-				// 	tweetStockAdvice(generateStatus(parsedQuote));
-				// }
-
 				else {
 					resolve(parsedQuote);
 				}
@@ -168,7 +163,7 @@ function getShittyAdvice() {
 // // Return random shitty comment from status_text.json
 function getShittyComment(percent) {
 
-	if (parseInt(percent) < 0) {
+	if (parseFloat(percent) < 0) {
 		var negComment = texts.comments.negative[getRandIndex( texts.comments.negative )].text;
 		return new Promise(function(resolve, reject){
 			avoidSimilar(negComment, getShittyComment, percent).then(function(res){
@@ -189,7 +184,7 @@ function getShittyComment(percent) {
 // Return random shitty direction from status_text.json
 function getShittyDirection(percent) {
 
-	if (parseInt(percent) < 0) {
+	if (parseFloat(percent) < 0) {
 		return texts.direction.down[getRandIndex( texts.direction.down )].text;
 	}
 	else {
@@ -287,32 +282,33 @@ function mockTweetStockAdvice(status) {
 	console.log(status);
 }
 
-// function tweetStockAdvice(status) {
+function tweetStockAdvice(status) {
 
-// 	if (status.length > 140) {
-// 		getRandomStockQuote();
-// 	}
+	if (status.length > 140) {
+		getRandomStockQuote();
+	}
 
-// 	else {
+	else {
 
-// 		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
-//   			if (err && err.code === 187) {
-//   				getRandomStockQuote();
-//   			}
-//   			else if (err && err.code != 187) {
-//   				console.log(err) // log into file
-//   			}
+		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
+  			if (err && err.code === 187) {
+  				getRandomStockQuote();
+  			}
+  			else if (err && err.code != 187) {
+  				console.log(err) // log into file
+  			}
 
-//   			console.log(data);
-// 		});
-// 	}
+  			console.log(data);
+		});
+	}
 		
-// }
+}
 
 
 getRandomStockQuote().then(function(quote){
 	generateStatus(quote).then(function(status){
-		mockTweetStockAdvice(status);
+		// mockTweetStockAdvice(status);
+		tweetStockAdvice(status);
 	});
 });
 
