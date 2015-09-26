@@ -1,20 +1,20 @@
+// load node modules
 var express = require("express");
-var fs = require("fs");
+// var fs = require("fs");
 var request = require("request"); 
-var cheerio = require("cheerio"); // for web scraping (not in use atm)
+// var cheerio = require("cheerio"); // for web scraping (not in use atm)
 var app = express();
+var util = require("util");
+var OAuth = require("oauth").OAuth;
 
-
+// include static files
 var companies = require("./companies.json");
 var texts = require("./status_texts.json");
 var config = require("./config.js");
 
-var util = require("util");
-var OAuth = require("oauth").OAuth;
 
 
 // Twitter module and settings
-
 var twit = require("twit");
 
 // TODO: put parameters into config and hide them from plain sight
@@ -187,7 +187,7 @@ function getStockQuoteBySymbol(symbol) {
 				var parsedQuote = stockQuery.query.results.quote;
 
 				if (parsedQuote.Change === null) {
-					getRandomStockQuote();
+					shittystockbot();
 				}
 				else {
 					resolve(parsedQuote);
@@ -300,12 +300,12 @@ function mockTweetStockAdvice(status) {
 function tweetStockAdvice(status) {
 
 	if (status.length > 140) {
-		getRandomStockQuote();
+		shittystockbot(); 
 	}
 	else {
 		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
   			if (err && err.code === 187) {
-  				getRandomStockQuote();
+  				shittystockbot();
   			}
   			else if (err && err.code != 187) {
   				console.log(err) // log into file
@@ -319,14 +319,18 @@ function tweetStockAdvice(status) {
 
 // ===== This is where the magic happens ===== //
 
-// Run the program
-getRandomStockQuote().then(function(quote){
-	generateStatus(quote).then(function(status){
+// This is the shitty bot
+function shittyStockBot() {
+	getRandomStockQuote().then(function(quote){
+		generateStatus(quote).then(function(status){
 		mockTweetStockAdvice(status);
 		// tweetStockAdvice(status);
+		});
 	});
-});
+}
 
+// run the shitty bot
+shittyStockBot();
 
 
 
