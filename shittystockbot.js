@@ -19,10 +19,10 @@ var twit = require("twit");
 
 // TODO: put parameters into config and hide them from plain sight
 var tweeter = new twit({
-    consumer_key:         'lLa03OyyvaHCLtzWFuDTBQJIl'
-  , consumer_secret:      'x6UYIzO0OiHt04TCdMgUKSUPnoSrSVZpmDVjieECD3ydfZCQ3a'
-  , access_token:         '3405822838-K00ij7isbMPrmWcLZM0yiHx0Uc0KGYExe3c8wWv'
-  , access_token_secret:  'mLdPKDinQyGRbB7EozecHmsijY0x0EXA0w2WuscchZG0h'
+    consumer_key:         config.consumer_key
+  , consumer_secret:      config.consumer_secret
+  , access_token:         config.access_token
+  , access_token_secret:  config.access_token_secret
 });
 
 
@@ -209,8 +209,8 @@ function getLatestTweets(amount) {
 	
 	oa = new OAuth("https://twitter.com/oauth/request_token",
 	                 "https://twitter.com/oauth/access_token", 
-	                 config.consumerKey, 
-	                 config.consumerSecret, 
+	                 config.consumer_key, 
+	                 config.consumer_secret, 
 	                 "1.0A", "http://localhost:3000/oauth/callback", "HMAC-SHA1");
 
 	return new Promise(function(resolve, reject) {
