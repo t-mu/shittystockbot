@@ -136,6 +136,16 @@
 			{ "type": "neg", "text": "Koskas päästään plussalle?" },
 			{ "type": "neg", "text": "Tähän on jo totuttu." },
 			{ "type": "neg", "text": "Kotimaan markkinat supistuneet:" }
+		],
+		"price": [
+			{"type": "price", "text": "nyt vain"},
+			{"type": "price", "text": "hetkellisesti"},
+			{"type": "price", "text": "jo"},
+			{"type": "price", "text": "hurjat"},
+			{"type": "price", "text": "väliaikaisesti"},
+			{"type": "price", "text": "vaivaiset"},
+			{"type": "price", "text": "jopa"},
+			{"type": "price", "text": "säälittävät"}
 		]
 	},
 	"advice": [
@@ -244,7 +254,7 @@
 		{ "type": "buy", "text": "Myyn maanantaina." },
 		{ "type": "buy", "text": "Myy perjantaina 1 000 kpl." },
 		{ "type": "buy", "text": "Osta torstaihin mennessä 4 000 eurolla." },
-		{ "type": "buy", "text": "Osta onni potkii!" },
+		{ "type": "buy", "text": "Ostajaa onni potkii!" },
 		{ "type": "buy", "text": "On tämä aikamoista lottoa, mutta ostakaa!" },
 		{ "type": "buy", "text": "Kissa merkkasi tämän Taloussanomista. Myy." },
 		{ "type": "buy", "text": "Osta heti 1 800 eurolla!" },

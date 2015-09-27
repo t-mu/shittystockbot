@@ -266,11 +266,13 @@ function generateStatus(data) {
 	var stockName = getStockNameBySymbol( data.Symbol );
 	var percentChange = data.PercentChange;
 	var price = data.LastTradePriceOnly;
+	var priceComment = texts.comments.price[ getRandIndex( texts.comments.price ) ].text;
 
 	var comment = Promise.resolve(getShittyComment(percentChange));
 	var modifier = Promise.resolve(getShittyModifier());
 	var percentDirection = Promise.resolve(getShittyPercentDirection(percentChange));
 	var priceDirection = Promise.resolve(getShittyPriceDirection(percentChange));
+
 	var advice = Promise.resolve(getShittyAdvice());
 	var hashtag = "#porssivinkki";
 
@@ -309,7 +311,7 @@ function generateStatus(data) {
 
 		var template_4 = [	comment, 
 							stockName,
-							"nyt vain",
+							priceComment,
 							price.replace(".",","),
 							"euroa.",
 							advice
