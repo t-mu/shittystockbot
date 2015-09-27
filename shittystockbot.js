@@ -384,8 +384,9 @@ function tweetStockAdvice(status) {
 function shittyStockBot() {
 	getRandomStockQuote()
 		.then(function(quote){ generateStatus(quote)
-		.then(function(status){ mockTweetStockAdvice(status);
-		// tweetStockAdvice(status);
+		.then(function(status){ 
+			mockTweetStockAdvice(status);
+			// tweetStockAdvice(status);
 		});
 	});
 }
@@ -393,9 +394,6 @@ function shittyStockBot() {
 // run the shitty bot
 shittyStockBot();
 
-for (var i = 0; i < 20; i++) {
-	shittyStockBot()
-};
 
 
 
