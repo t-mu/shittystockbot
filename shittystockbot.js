@@ -159,12 +159,12 @@ function avoidSimilar(thing, callback) {
 	});	
 }
 
-// Check wether latest tweets contain a specific string
+// Check wether (20) latest tweets contain a specific string
 function recentTweetsContain(subStr) {
 
 	return new Promise(function(resolve, rejcet){
 
-		getLatestTweets(10).then(function(response) {
+		getLatestTweets(20).then(function(response) {
 			for (tweet of response) {
 				if (tweet.text.includes(subStr)) {
 					resolve(true);
@@ -285,11 +285,11 @@ function generateStatus(data) {
 
 	return new Promise(function(resolve, reject){
 		
-		var template_1 = [	advice,
-							stockName, 
+		var template_1 = [	stockName, 
 							modifier, 
 							percentDirection,
-							percentChange.replace(".",",").replace("%"," %.")
+							percentChange.replace(".",",").replace("%"," %."),
+							advice
 						];
 
 		var template_2 = [	comment,
@@ -307,11 +307,13 @@ function generateStatus(data) {
 							advice
 						];
 
-		var template_4 = [	advice, 
+		var template_4 = [	comment, 
 							stockName,
-							modifier,
-							percentDirection,
-							percentChange.replace(".",",").replace("%"," %.")
+							"nyt vain",
+							price.replace(".",","),
+							"euroa.",
+							advice
+
 						];
 
 		var templates = [template_1, template_2, template_3, template_4];
@@ -389,9 +391,9 @@ function shittyStockBot() {
 // run the shitty bot
 shittyStockBot();
 
-// for (var i = 0; i < 20; i++) {
-// 	shittyStockBot()
-// };
+for (var i = 0; i < 20; i++) {
+	shittyStockBot()
+};
 
 
 
