@@ -3,7 +3,7 @@ var express = require("express");
 // var fs = require("fs");
 var request = require("request"); 
 // var cheerio = require("cheerio"); // for web scraping (not in use atm)
-var app = express();
+// var app = express();
 var util = require("util");
 var OAuth = require("oauth").OAuth;
 
@@ -17,7 +17,7 @@ var config = require("./config.js");
 // Twitter module and settings
 var twit = require("twit");
 
-// TODO: put parameters into config and hide them from plain sight
+// twit module constuctor
 var tweeter = new twit({
     consumer_key:         config.consumer_key
   , consumer_secret:      config.consumer_secret
@@ -104,13 +104,24 @@ function getShittyComment(percent) {
 }
 
 // Return random shitty direction from status_text.json
-function getShittyDirection(percent) {
+function getShittyPercentDirection(percent) {
 
 	if (parseFloat(percent) < 0) {
-		return texts.direction.down[getRandIndex( texts.direction.down )].text;
+		return texts.percentDirection.down[getRandIndex( texts.percentDirection.down )].text;
 	}
 	else {
-		return texts.direction.up[getRandIndex( texts.direction.up )].text;
+		return texts.percentDirection.up[getRandIndex( texts.percentDirection.up )].text;
+	}
+}
+
+// Return random shitty direction from status_text.json
+function getShittyPriceDirection(percent) {
+
+	if (parseFloat(percent) < 0) {
+		return texts.priceDirection.down[getRandIndex( texts.priceDirection.down )].text;
+	}
+	else {
+		return texts.priceDirection.up[getRandIndex( texts.priceDirection.up )].text;
 	}
 }
 
@@ -119,7 +130,9 @@ function getShittyModifier() {
 	return texts.modifiers[getRandIndex( texts.modifiers )];
 }
 
+function getTweetTemplate() {
 
+}
 
 
 
@@ -242,6 +255,7 @@ function getRandomStockQuote() {
 	return new Promise(function(resolve, reject){
 		getStockQuoteBySymbol( company.symbol ).then(function(response) {
 			resolve(response);
+			// console.log(response);
 		});
 	}); 
 }
@@ -251,29 +265,72 @@ function generateStatus(data) {
 
 	var stockName = getStockNameBySymbol( data.Symbol );
 	var percentChange = data.PercentChange;
+	var price = data.LastTradePriceOnly;
+
+	var comment = Promise.resolve(getShittyComment(percentChange));
+	var modifier = Promise.resolve(getShittyModifier());
+	var percentDirection = Promise.resolve(getShittyPercentDirection(percentChange));
+	var priceDirection = Promise.resolve(getShittyPriceDirection(percentChange));
+	var advice = Promise.resolve(getShittyAdvice());
+	var hashtag = "#porssivinkki";
+
+	var roundedPrice = function() {
+								if (parseFloat(percentChange) < 0) {
+									return Math.floor(price);
+								}
+								else {
+									return Math.ceil(price);
+								}	
+							}
 
 	return new Promise(function(resolve, reject){
 		
-		var comment = Promise.resolve(getShittyComment(percentChange));
-		var modiefier = Promise.resolve(getShittyModifier());
-		var direction = Promise.resolve(getShittyDirection(percentChange));
-		var advice = Promise.resolve(getShittyAdvice());
-		var hashtag = " #porssivinkki";
+		var template_1 = [	advice,
+							stockName, 
+							modifier, 
+							percentDirection,
+							percentChange.replace(".",",").replace("%"," %.")
+						];
 
-		Promise.all([	comment, 
-						stockName, 
-						modiefier, 
-						direction, 
-						" " + percentChange.replace(".",",").replace("%"," %."), 
-						advice, 
-						hashtag
-					])
+		var template_2 = [	comment,
+							stockName, 
+							modifier, 
+							percentDirection,
+							percentChange.replace(".",",").replace("%"," %."),
+							advice
+						];
+
+		var template_3 = [	stockName,
+							priceDirection, 
+							roundedPrice(),
+							"euroon.", 
+							advice
+						];
+
+		var template_4 = [	advice, 
+							stockName,
+							modifier,
+							percentDirection,
+							percentChange.replace(".",",").replace("%"," %.")
+						];
+
+		var templates = [template_1, template_2, template_3, template_4];
+
+		// Promise.all([	comment, 
+		// 				stockName, 
+		// 				modiefier, 
+		// 				direction, 
+		// 				" " + percentChange.replace(".",",").replace("%"," %."), 
+		// 				advice, 
+		// 				hashtag
+		// 			])
+		Promise.all(templates[getRandIndex(templates)])
 		.then(function(values){
 			var status = "";
 			for (value of values) {
-				status = status + value;
+				status = status + value + " ";
 			}
-			resolve(status);	
+			resolve(status + hashtag);	
 		});
 	});
 }
@@ -321,9 +378,9 @@ function tweetStockAdvice(status) {
 
 // This is the shitty bot
 function shittyStockBot() {
-	getRandomStockQuote().then(function(quote){
-		generateStatus(quote).then(function(status){
-		mockTweetStockAdvice(status);
+	getRandomStockQuote()
+		.then(function(quote){ generateStatus(quote)
+		.then(function(status){ mockTweetStockAdvice(status);
 		// tweetStockAdvice(status);
 		});
 	});
