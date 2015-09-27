@@ -324,7 +324,7 @@ function generateStatus(data) {
 		// 				advice, 
 		// 				hashtag
 		// 			])
-		Promise.all(templates[getRandIndex(templates)])
+		Promise.all( templates[getRandIndex(templates)] )
 		.then(function(values){
 			var status = "";
 			for (value of values) {
@@ -349,7 +349,7 @@ function mockTweetStockAdvice(status) {
 		console.log("================  The tweet is too long! =================" + "\n" 
 			+ "Tweet length: " + status.length + "\n" + status);
 	}
-	console.log(status);
+	console.log(status + "\n");
 }
 
 
@@ -389,6 +389,9 @@ function shittyStockBot() {
 // run the shitty bot
 shittyStockBot();
 
+// for (var i = 0; i < 20; i++) {
+// 	shittyStockBot()
+// };
 
 
 
