@@ -2,7 +2,7 @@
 var express = require("express");
 // var fs = require("fs");
 var request = require("request"); 
-// var cheerio = require("cheerio"); // for web scraping (not in use atm)
+// var cheerio = require("cheerio"); // try to make and own module with prmomises?
 // var app = express();
 var util = require("util");
 var OAuth = require("oauth").OAuth;
@@ -134,6 +134,7 @@ function getTweetTemplate() {
 
 }
 
+// TODO: make above into own module with class variables, just call status.getShittymodifier()
 
 
 
