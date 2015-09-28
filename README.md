@@ -1,5 +1,5 @@
 # shittystockbot
-Twitter bot posting random stock market advice.
+Twitter bot posting shitty stock market advice.
 
 ### What's the deal?
 Just something I came up with when I wanted to learn some basic Node.js and Git.
