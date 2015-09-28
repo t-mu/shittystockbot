@@ -184,7 +184,7 @@ function recentTweetsContain(subStr) {
 
 
 // Get company's stockquote by symbol from yahoo API
-function getStockQuoteBySymbol(symbol) {
+function getStockQuoteBySymbol(symbol, callback) {
 
 	var url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(%22" + 
 			symbol + 
@@ -200,7 +200,7 @@ function getStockQuoteBySymbol(symbol) {
 				var parsedQuote = stockQuery.query.results.quote;
 
 				if (parsedQuote.Change === null) {
-					shittystockbot();
+					callback();
 				}
 				else {
 					resolve(parsedQuote);
@@ -253,7 +253,7 @@ function getLatestTweets(amount) {
 function getRandomStockQuote() {
 	var company = JSON.parse( getCompanyFromJson( getRandIndex(companies) ) );
 	return new Promise(function(resolve, reject){
-		getStockQuoteBySymbol( company.symbol ).then(function(response) {
+		getStockQuoteBySymbol( company.symbol, shittyStockBot ).then(function(response) {
 			resolve(response);
 			// console.log(response);
 		});
@@ -285,56 +285,48 @@ function generateStatus(data) {
 								}	
 							}
 
+	var template_1 = [	stockName, 
+						modifier, 
+						percentDirection,
+						percentChange.replace(".",",").replace("%"," %."),
+						advice
+					];
+
+	var template_2 = [	comment,
+						stockName, 
+						modifier, 
+						percentDirection,
+						percentChange.replace(".",",").replace("%"," %."),
+						advice
+					];
+
+	var template_3 = [	stockName,
+						priceDirection, 
+						roundedPrice(),
+						"euroon.", 
+						advice
+					];
+
+	var template_4 = [	comment, 
+						stockName,
+						priceComment,
+						price.replace(".",","),
+						"euroa.",
+						advice
+					];
+
+	var templates = [template_1, template_2, template_3, template_4];
+
 	return new Promise(function(resolve, reject){
-		
-		var template_1 = [	stockName, 
-							modifier, 
-							percentDirection,
-							percentChange.replace(".",",").replace("%"," %."),
-							advice
-						];
 
-		var template_2 = [	comment,
-							stockName, 
-							modifier, 
-							percentDirection,
-							percentChange.replace(".",",").replace("%"," %."),
-							advice
-						];
-
-		var template_3 = [	stockName,
-							priceDirection, 
-							roundedPrice(),
-							"euroon.", 
-							advice
-						];
-
-		var template_4 = [	comment, 
-							stockName,
-							priceComment,
-							price.replace(".",","),
-							"euroa.",
-							advice
-
-						];
-
-		var templates = [template_1, template_2, template_3, template_4];
-
-		// Promise.all([	comment, 
-		// 				stockName, 
-		// 				modiefier, 
-		// 				direction, 
-		// 				" " + percentChange.replace(".",",").replace("%"," %."), 
-		// 				advice, 
-		// 				hashtag
-		// 			])
+	
 		Promise.all( templates[getRandIndex(templates)] )
 		.then(function(values){
 			var status = "";
 			for (value of values) {
 				status = status + value + " ";
 			}
-			resolve(status + hashtag);	
+			resolve(status + hashtag);
 		});
 	});
 }
@@ -358,10 +350,10 @@ function mockTweetStockAdvice(status) {
 
 
 // Actually tweet the shitty advice 
-function tweetStockAdvice(status) {
+function tweetStockAdvice(status, callback) {
 
 	if (status.length > 140) {
-		shittystockbot(); 
+		callback(); 
 	}
 	else {
 		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
@@ -386,7 +378,7 @@ function shittyStockBot() {
 		.then(function(quote){ generateStatus(quote)
 		.then(function(status){ 
 			mockTweetStockAdvice(status);
-			// tweetStockAdvice(status);
+			// tweetStockAdvice(status, shittyStockBot);
 		});
 	});
 }
