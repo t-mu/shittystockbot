@@ -4,14 +4,15 @@ var express = require("express");
 var request = require("request"); 
 // var cheerio = require("cheerio"); // try to make and own module with prmomises?
 // var app = express();
-var util = require("util");
-var OAuth = require("oauth").OAuth;
 
 // include static files
 var companies = require("./companies.json");
 var texts = require("./status_texts.json");
 var config = require("./config.js");
 
+// module to get status parts for a tweet
+var statusModule = require("./my_modules/statusModule.js");
+var mod = new statusModule();	
 
 
 // Twitter module and settings
@@ -33,6 +34,10 @@ var tweeter = new twit({
 
 function getRandIndex(dataset) {
 	return Math.floor(Math.random() * dataset.length);
+}
+
+Array.prototype.rand = function() {
+    return this[Math.floor(Math.random() * this.length)]
 }
 
 function getCompanyFromJson(index) {
@@ -64,120 +69,6 @@ function getStockNameBySymbol(symbol) {
 	}
 	return stockName;
 }
-
-
-
-
-
-// ===== Get shitty stuff for a tweet ===== //  
-
-
-// Return random shitty advice from status_text.json
-function getShittyAdvice() {
-	var advice = texts.advice[getRandIndex( texts.advice )].text;
-	return new Promise(function(resolve, reject){
-		avoidSimilar(advice, getShittyAdvice).then(function(res){
-			resolve(res);
-		});	
-	});
-}
-
-// // Return random shitty comment from status_text.json
-function getShittyComment(percent) {
-
-	if (parseFloat(percent) < 0) {
-		var negComment = texts.comments.negative[getRandIndex( texts.comments.negative )].text;
-		return new Promise(function(resolve, reject){
-			avoidSimilar(negComment, getShittyComment, percent).then(function(res){
-				resolve(res);
-			});	
-		});
-	}
-	else {
-		var posComment = texts.comments.positive[getRandIndex( texts.comments.positive )].text;
-		return new Promise(function(resolve, reject){
-			avoidSimilar(posComment, getShittyComment, percent).then(function(res){
-				resolve(res);
-			});	
-		});
-	}
-}
-
-// Return random shitty direction from status_text.json
-function getShittyPercentDirection(percent) {
-
-	if (parseFloat(percent) < 0) {
-		return texts.percentDirection.down[getRandIndex( texts.percentDirection.down )].text;
-	}
-	else {
-		return texts.percentDirection.up[getRandIndex( texts.percentDirection.up )].text;
-	}
-}
-
-// Return random shitty direction from status_text.json
-function getShittyPriceDirection(percent) {
-
-	if (parseFloat(percent) < 0) {
-		return texts.priceDirection.down[getRandIndex( texts.priceDirection.down )].text;
-	}
-	else {
-		return texts.priceDirection.up[getRandIndex( texts.priceDirection.up )].text;
-	}
-}
-
-// Return random shitty modifier from status_text.json
-function getShittyModifier() {
-	return texts.modifiers[getRandIndex( texts.modifiers )];
-}
-
-function getTweetTemplate() {
-
-}
-
-// TODO: make above into own module with class variables, just call status.getShittymodifier()
-
-
-
-// ===== Check some stuff before constructing a new tweet ===== ///
-
-
-// Request new status text part if recent tweets contain current part
-function avoidSimilar(thing, callback) {
-
-	return new Promise(function(resolve, reject){
-		
-		recentTweetsContain(thing).then(function(response){
-				
-			if (response === true) {
-				// console.log("Recent tweets contain this substring: " + thing);
-				resolve(callback(arguments[2]));
-			}
-			else if (response === false){
-				// console.log("Recent tweets do not contain this substring: " + thing);
-				resolve(thing);
-			}
-		});
-	});	
-}
-
-// Check wether (20) latest tweets contain a specific string
-function recentTweetsContain(subStr) {
-
-	return new Promise(function(resolve, rejcet){
-
-		getLatestTweets(20).then(function(response) {
-			for (tweet of response) {
-				if (tweet.text.includes(subStr)) {
-					resolve(true);
-				}
-			}
-			resolve(false);
-		});
-	});	
-}
-
-
-
 
 
 
@@ -216,48 +107,17 @@ function getStockQuoteBySymbol(symbol, callback) {
 } 
 
 
-// Return shittystockbot's latest tweets from twitter API
-function getLatestTweets(amount) { 
-
-	var url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=porssivinkki&count=" + amount;
-	
-	oa = new OAuth("https://twitter.com/oauth/request_token",
-	                 "https://twitter.com/oauth/access_token", 
-	                 config.consumer_key, 
-	                 config.consumer_secret, 
-	                 "1.0A", "http://localhost:3000/oauth/callback", "HMAC-SHA1");
-
-	return new Promise(function(resolve, reject) {
-
-		oa.get(url, config.accessToken, config.accessTokenSecret, function(error, data) {
-		  
-			if (!error) {
-				res = JSON.parse(data)
-		 		resolve(res);
-			}
-			else {
-				reject(Error("ERROR!"));
-			}
-
-		});
-	});
-}
-
-
-
-
 
 // ===== Generating the tweet ===== //
 
 
 // Get a stockquote for a random company from companies.json
 function getRandomStockQuote() {
-	var company = JSON.parse( getCompanyFromJson( getRandIndex(companies) ) );
 	return new Promise(function(resolve, reject){
-		getStockQuoteBySymbol( company.symbol, shittyStockBot ).then(function(response) {
-			resolve(response);
-			// console.log(response);
-		});
+		getStockQuoteBySymbol( companies.rand().symbol, shittyStockBot )
+			.then(function(response) {
+				resolve(response);
+			});
 	}); 
 }
 
@@ -267,14 +127,14 @@ function generateStatus(data) {
 	var stockName = getStockNameBySymbol( data.Symbol );
 	var percentChange = data.PercentChange;
 	var price = data.LastTradePriceOnly;
-	var priceComment = texts.comments.price[ getRandIndex( texts.comments.price ) ].text;
 
-	var comment = Promise.resolve(getShittyComment(percentChange));
-	var modifier = Promise.resolve(getShittyModifier());
-	var percentDirection = Promise.resolve(getShittyPercentDirection(percentChange));
-	var priceDirection = Promise.resolve(getShittyPriceDirection(percentChange));
-
-	var advice = Promise.resolve(getShittyAdvice());
+	var priceComment = mod.commentsPrice();
+	var comment = mod.comment(percentChange);
+	var modifier = mod.modifiers();
+	var percentDirection = mod.percentText(percentChange);
+	var priceDirection = mod.priceText(percentChange);
+	var advice = mod.advice();
+	
 	var hashtag = "#porssivinkki";
 
 	var roundedPrice = function() {
@@ -320,8 +180,7 @@ function generateStatus(data) {
 
 	return new Promise(function(resolve, reject){
 
-	
-		Promise.all( templates[getRandIndex(templates)] )
+		Promise.all( templates.rand() )
 		.then(function(values){
 			var status = "";
 			for (value of values) {
@@ -359,10 +218,11 @@ function tweetStockAdvice(status, callback) {
 	else {
 		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
   			if (err && err.code === 187) {
-  				shittystockbot();
+  				callback(); 	// tweet too long -> get new tweet
   			}
   			else if (err && err.code != 187) {
   				console.log(err) // log into file
+  				callback();		// error handling to the max -> get new tweet
   			}
 		});
 	}
@@ -385,8 +245,7 @@ function shittyStockBot() {
 }
 
 // run the shitty bot
-shittyStockBot();
-
+// shittyStockBot();
 
 
 
