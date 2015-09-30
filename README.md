@@ -7,4 +7,4 @@ It's a relatively simple program and does nothing too fancy (fetch data from API
 but still had me work on it quite a few evenings.
 
 ### Follow the bot on Twitter
-https://twitter.com/porssivinkki
+https://twitter.com/porssivinkki (in Finnish)
