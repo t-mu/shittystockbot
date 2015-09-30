@@ -1,17 +1,28 @@
+/*
+	WHAT 
+	Exports a function that can be called for randomized 
+	status text parts to be used in a tweet. Uses tweetCecker
+	module to prevent same pieces to be used too soon.
+	
+	WHY
+	Generally to make the tweets totally random, opefully shitty and
+	even contradicting. The idea is to post shitty advice afterall.
+*/
+
 var texts = require("../status_texts.json");
 var tweetChecker = require("./tweetChecker.js");
 
 var recentTweets = new tweetChecker();
 
-var adviceTxt = texts.advice;
-var commentsNeg = texts.comments.negative;
-var commentsPos = texts.comments.positive;
-var percentUp = texts.percentDirection.up;
-var percentDown = texts.percentDirection.down;
-var priceUp = texts.priceDirection.up;
-var priceDown = texts.priceDirection.down;
-var commentsPrice = texts.comments.price;
-var modifiers = texts.modifiers;
+var adviceTxt 		= texts.advice;
+var commentsNeg 	= texts.comments.negative;
+var commentsPos 	= texts.comments.positive;
+var percentUp 		= texts.percentDirection.up;
+var percentDown 	= texts.percentDirection.down;
+var priceUp 		= texts.priceDirection.up;
+var priceDown 		= texts.priceDirection.down;
+var commentsPrice 	= texts.comments.price;
+var modifiers 		= texts.modifiers;
 
 module.exports = function() {
 
@@ -26,7 +37,7 @@ module.exports = function() {
 	}
 
 	this.comment =  function(percent){
-		
+
 		if (parseFloat(percent) < 0) {
 			return Promise.resolve(
 				recentTweets.contain( commentsNeg.rand().text, this.comment, percent )	

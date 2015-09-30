@@ -1,40 +1,38 @@
-// load node modules
-var express = require("express");
-// var fs = require("fs");
-var request = require("request"); 
-// var cheerio = require("cheerio"); // try to make and own module with prmomises?
-// var app = express();
+/*
+	WHAT 
+	The main file. Pretty much bundles things together and
+	somehow makes it work too. Also contains some some helper
+	functions and other things I didn't know where to put them.
 
-// include static files
+	Should work something like this:
+	1. Get some random company's stockquote from Yahoo
+	2. Get some random shitty advice
+	3. Generate a shitty advice tweet from 1 and 2
+	4. Post the shitty tweet to Twitter
+	
+	WHY
+	For shits and giggles.
+*/
+
+var request = require("request"); 
+
+// static files
 var companies = require("./companies.json");
 var texts = require("./status_texts.json");
 var config = require("./config.js");
 
-// module to get status parts for a tweet
+// load custom modules
 var statusModule = require("./my_modules/statusModule.js");
-var mod = new statusModule();	
+var tweeterModule = require("./my_modules/tweeter.js");
 
-
-// Twitter module and settings
-var twit = require("twit");
-
-// twit module constuctor
-var tweeter = new twit({
-    consumer_key:         config.consumer_key
-  , consumer_secret:      config.consumer_secret
-  , access_token:         config.access_token
-  , access_token_secret:  config.access_token_secret
-});
+var status = new statusModule();	
+var tweeter = new tweeterModule( shittyStockBot );
 
 
 
 // ===== Some yelper funcs ===== //
 
 // Stuff for handling company info
-
-function getRandIndex(dataset) {
-	return Math.floor(Math.random() * dataset.length);
-}
 
 Array.prototype.rand = function() {
     return this[Math.floor(Math.random() * this.length)]
@@ -71,9 +69,7 @@ function getStockNameBySymbol(symbol) {
 }
 
 
-
-// ===== Fetching stuff from APIs ===== //
-
+// ----------------------------------------- //
 
 // Get company's stockquote by symbol from yahoo API
 function getStockQuoteBySymbol(symbol, callback) {
@@ -110,41 +106,30 @@ function getStockQuoteBySymbol(symbol, callback) {
 
 // ===== Generating the tweet ===== //
 
+// Generate a full blown twitter status from shitty status parts
+function generateStatus(data) {	
 
-// Get a stockquote for a random company from companies.json
-function getRandomStockQuote() {
-	return new Promise(function(resolve, reject){
-		getStockQuoteBySymbol( companies.rand().symbol, shittyStockBot )
-			.then(function(response) {
-				resolve(response);
-			});
-	}); 
-}
+	var stockName 			= getStockNameBySymbol( data.Symbol );
+	var percentChange 		= data.PercentChange;
+	var price 				= data.LastTradePriceOnly;
 
-// Generate a full blown twitter status from shitty text parts
-function generateStatus(data) {
-
-	var stockName = getStockNameBySymbol( data.Symbol );
-	var percentChange = data.PercentChange;
-	var price = data.LastTradePriceOnly;
-
-	var priceComment = mod.commentsPrice();
-	var comment = mod.comment(percentChange);
-	var modifier = mod.modifiers();
-	var percentDirection = mod.percentText(percentChange);
-	var priceDirection = mod.priceText(percentChange);
-	var advice = mod.advice();
+	var priceComment 		= status.commentsPrice();
+	var comment 			= status.comment(percentChange);
+	var modifier 			= status.modifiers();
+	var percentDirection 	= status.percentText(percentChange);
+	var priceDirection 		= status.priceText(percentChange);
+	var advice 				= status.advice();
 	
 	var hashtag = "#porssivinkki";
 
 	var roundedPrice = function() {
-								if (parseFloat(percentChange) < 0) {
-									return Math.floor(price);
-								}
-								else {
-									return Math.ceil(price);
-								}	
-							}
+						if (parseFloat(percentChange) < 0) {
+							return Math.floor(price);
+						}
+						else {
+							return Math.ceil(price);
+							}	
+						}
 
 	var template_1 = [	stockName, 
 						modifier, 
@@ -192,60 +177,25 @@ function generateStatus(data) {
 }
 
 
-
-
-
-// ===== Tweeting ===== //
-
-
-// mock the shitty advice
-function mockTweetStockAdvice(status) {
-
-	if (status.length > 140) {
-		console.log("================  The tweet is too long! =================" + "\n" 
-			+ "Tweet length: " + status.length + "\n" + status);
-	}
-	console.log(status + "\n");
-}
-
-
-// Actually tweet the shitty advice 
-function tweetStockAdvice(status, callback) {
-
-	if (status.length > 140) {
-		callback(); 
-	}
-	else {
-		tweeter.post('statuses/update', { status: status }, function(err, data, response) {
-  			if (err && err.code === 187) {
-  				callback(); 	// tweet too long -> get new tweet
-  			}
-  			else if (err && err.code != 187) {
-  				console.log(err) // log into file
-  				callback();		// error handling to the max -> get new tweet
-  			}
-		});
-	}
-		
-}
-
-
-
 // ===== This is where the magic happens ===== //
 
-// This is the shitty bot
+// Define the shitty bot
 function shittyStockBot() {
-	getRandomStockQuote()
-		.then(function(quote){ generateStatus(quote)
+
+	var quote =	getStockQuoteBySymbol( companies.rand().symbol, shittyStockBot )
+
+	Promise.resolve(quote)
+		.then(function(quote){ 
+			generateStatus(quote)
 		.then(function(status){ 
-			mockTweetStockAdvice(status);
-			// tweetStockAdvice(status, shittyStockBot);
+			tweeter.mock(status);
+			// tweeter.tweet(status);
 		});
 	});
 }
 
 // run the shitty bot
-// shittyStockBot();
+shittyStockBot();
 
 
 

@@ -1,9 +1,18 @@
+/*
+	WHAT 
+	Gets a given number of latest tweets for a given user and checks whether
+	these tweets contain a specific string.
+	
+	WHY
+	To prevent consecutive tweets having similar content and in general bring
+	more variety into tweets.
+*/
+
 var config = require("../config.js");
 var OAuth = require("oauth").OAuth;
 
-
-
-// ===== Check some stuff before constructing a new tweet ===== ///
+var user = "porssivinkki";
+var amount = 20;
 
 module.exports = function() {
 
@@ -12,7 +21,7 @@ module.exports = function() {
 
 		return new Promise(function(resolve, rejcet){
 
-			getLatestTweets(20).then(function(response) {
+			getLatestTweets(user , amount).then(function(response) {
 				for (tweet of response) {
 					if (tweet.text.includes(string)) {
 						resolve(callback(arguments[2]));
@@ -24,9 +33,9 @@ module.exports = function() {
 	}
 
 	// Fetch a specific amount of shittystockbot's latest tweets from twitter API
-	function getLatestTweets(amount) { 
+	function getLatestTweets(user, amount) { 
 
-		var url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=porssivinkki&count=" + amount;
+		var url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" + user + "&count=" + amount;
 		
 		oa = new OAuth("https://twitter.com/oauth/request_token",
 		                 "https://twitter.com/oauth/access_token", 
