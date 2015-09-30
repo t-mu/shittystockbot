@@ -8,7 +8,7 @@
 	more variety into tweets.
 */
 
-var config = require("../config.js");
+var config = require("../data/config.js");
 var OAuth = require("oauth").OAuth;
 
 var user = "porssivinkki";

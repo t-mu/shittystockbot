@@ -17,9 +17,9 @@
 var request = require("request"); 
 
 // static files
-var companies = require("./companies.json");
-var texts = require("./status_texts.json");
-var config = require("./config.js");
+var companies = require("./data/companies.json");
+var texts = require("./data/status_texts.json");
+var config = require("./data/config.js");
 
 // load custom modules
 var statusModule = require("./my_modules/statusModule.js");

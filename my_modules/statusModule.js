@@ -9,7 +9,7 @@
 	even contradicting. The idea is to post shitty advice afterall.
 */
 
-var texts = require("../status_texts.json");
+var texts = require("../data/status_texts.json");
 var tweetChecker = require("./tweetChecker.js");
 
 var recentTweets = new tweetChecker();
