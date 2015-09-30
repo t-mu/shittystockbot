@@ -10,7 +10,13 @@
 var twit = require("twit");
 var config = require("../config.js");
 
-// set your twitter app keys and access tokens
+/* 	
+	DISCLAIMER!
+	Don't try to sniff these from version history
+	(or do try), they have been changed. 
+	#learningToGit #dontPushKeysToRepo
+*/
+// Set your twitter app keys and access tokens
 var tweeter = new twit({
     consumer_key:         config.consumer_key
   , consumer_secret:      config.consumer_secret
