@@ -137,16 +137,25 @@
 			{ "type": "neg", "text": "Tähän on jo totuttu." },
 			{ "type": "neg", "text": "Kotimaan markkinat supistuneet:" }
 		],
-		"price": [
-			{"type": "price", "text": "nyt vain"},
-			{"type": "price", "text": "hetkellisesti"},
-			{"type": "price", "text": "jo"},
-			{"type": "price", "text": "hurjat"},
-			{"type": "price", "text": "väliaikaisesti"},
-			{"type": "price", "text": "vaivaiset"},
-			{"type": "price", "text": "jopa"},
-			{"type": "price", "text": "säälittävät"}
-		]
+		"price": {
+			"up": [
+				{"type": "price", "text": "nyt vain" },
+				{"type": "price", "text": "hetkellisesti" },
+				{"type": "price", "text": "jo" },
+				{"type": "price", "text": "hurjat" },
+				{"type": "price", "text": "makeat" },
+				{"type": "price", "text": "hunajaiset" },
+				{"type": "price", "text": "mehevät" }
+			],
+			"down": [
+				{"type": "price", "text": "väliaikaisesti" },
+				{"type": "price", "text": "vaivaiset" },
+				{"type": "price", "text": "jopa" },
+				{"type": "price", "text": "säälittävät" },
+				{"type": "price", "text": "nihkeät" },
+				{"type": "price", "text": "hikiset" }
+			]
+		}	
 	},
 	"advice": [
 		{ "type": "buy", "text": "Nyt joukolla ostamaan!" },
@@ -245,7 +254,7 @@
 		{ "type": "buy", "text": "Mieti kahdesti ennen, kun toimit." },
 		{ "type": "buy", "text": "Kiinni niin kuin sika limppuun! Osta!" },
 		{ "type": "buy", "text": "Myy, vaikka sitten tappiolla." },
-		{ "type": "buy", "text": "Jemaan ensi vuodelle. Ostoon." },
+		{ "type": "buy", "text": "Jemmaan ensi vuodelle. Ostoon!" },
 		{ "type": "buy", "text": "Myy ennen kuunvaihdetta." },
 		{ "type": "buy", "text": "Osta ennen joulua." },
 		{ "type": "buy", "text": "Myy viimeistään jouluna." },

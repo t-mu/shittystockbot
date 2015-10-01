@@ -74,8 +74,15 @@ module.exports = function() {
 		return Promise.resolve( modifiers.rand() );
 	}
 
-	this.commentsPrice = function() {
-		return Promise.resolve(	commentsPrice.rand().text );
+	this.commentsPrice = function(percent) {
+
+		if (parseFloat(percent) < 0) {
+			return Promise.resolve(	commentsPrice.down.rand().text );
+		}
+		else {
+			return Promise.resolve(	commentsPrice.up.rand().text );
+		}
+		
 	}
 
 
