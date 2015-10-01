@@ -2,7 +2,7 @@
 	WHAT 
 	The main file. Pretty much bundles things together and
 	somehow makes it work too. Also contains some some helper
-	functions and other things I didn't know where to put them.
+	functions and other things I didn't know where to put.
 
 	Should work something like this:
 	1. Get some random company's stockquote from Yahoo
